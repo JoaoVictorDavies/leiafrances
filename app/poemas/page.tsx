@@ -1,6 +1,12 @@
-export const dynamic = 'force-dynamic'
+'use client'
 
-import { getSupabase } from '../lib/supabase'
+import { useEffect, useState } from 'react'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 type Segment = {
   order_index: number
@@ -15,79 +21,76 @@ type Work = {
   segments: Segment[]
 }
 
-export default async function PoemasPage() {
-  const supabase = getSupabase()
+export default function PoemasPage() {
+  const [works, setWorks] = useState<Work[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const { data: works, error } = await supabase
-    .from('works')
-    .select(`
-      id,
-      title,
-      author,
-      segments (
-        order_index,
-        text_fr,
-        text_pt
-      ),
-      collections!inner (
-        slug
-      )
-    `)
-    .eq('collections.slug', 'poemas')
-    .order('created_at', { ascending: true })
+  useEffect(() => {
+    async function load() {
+      const { data, error } = await supabase
+        .from('works')
+        .select(`
+          id,
+          title,
+          author,
+          segments (
+            order_index,
+            text_fr,
+            text_pt
+          ),
+          collections!inner ( slug )
+        `)
+        .eq('collections.slug', 'poemas')
+        .order('created_at', { ascending: true })
 
-  if (error) {
-    throw new Error(error.message)
+      if (!error && data) {
+        setWorks(data)
+      }
+
+      setLoading(false)
+    }
+
+    load()
+  }, [])
+
+  if (loading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        Carregando…
+      </main>
+    )
   }
 
   return (
     <main className="min-h-screen bg-zinc-50 dark:bg-black flex justify-center px-6 py-24">
-      <article className="w-full max-w-2xl text-center text-zinc-900 dark:text-zinc-100 space-y-24">
-
-        {works?.map((work) => (
+      <article className="w-full max-w-2xl text-center space-y-24">
+        {works.map(work => (
           <section key={work.id}>
-
-            {/* Cabeçalho do poema */}
             <header className="mb-16">
-              <h1 className="text-4xl font-serif font-semibold tracking-tight mb-4">
+              <h1 className="text-4xl font-serif font-semibold mb-4">
                 {work.title}
               </h1>
-              <p className="text-sm italic text-zinc-500 dark:text-zinc-400">
+              <p className="italic text-sm text-zinc-500">
                 {work.author}
               </p>
             </header>
 
-            {/* Versos */}
-            <section className="space-y-4 text-lg leading-8">
+            <section className="space-y-4 text-lg">
               {work.segments
                 .sort((a, b) => a.order_index - b.order_index)
-                .map((segment, index) => (
-                  <details
-                    key={index}
-                    className="group cursor-pointer transition-all"
-                  >
-                    <summary className="list-none focus:outline-none">
-                      <span className="block font-serif group-hover:text-zinc-500 transition-colors">
-                        {segment.text_fr}
-                      </span>
+                .map((s, i) => (
+                  <details key={i}>
+                    <summary className="cursor-pointer">
+                      {s.text_fr}
                     </summary>
-
-                    <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-                      {segment.text_pt}
+                    <p className="text-sm text-zinc-500 mt-1">
+                      {s.text_pt}
                     </p>
                   </details>
                 ))}
             </section>
-
           </section>
         ))}
-
-        {/* Rodapé */}
-        <footer className="text-xs text-zinc-400 dark:text-zinc-500">
-          <p>Clique em cada verso para revelar a tradução.</p>
-          <p className="mt-2">Textos de domínio público · Coleção: Poemas</p>
-        </footer>
-
       </article>
     </main>
   )
