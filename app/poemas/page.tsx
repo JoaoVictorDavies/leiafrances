@@ -18,7 +18,19 @@ type Work = {
 export default async function PoemasPage() {
   const supabase = getSupabase()
 
-  const { data: works, error } = await supabase
+  // 1️⃣ Buscar explicitamente a coleção "poemas"
+  const { data: collection, error: collectionError } = await supabase
+    .from('collections')
+    .select('id')
+    .eq('slug', 'poemas')
+    .single()
+
+  if (collectionError || !collection) {
+    throw new Error('Coleção "poemas" não encontrada')
+  }
+
+  // 2️⃣ Buscar works APENAS dessa coleção
+  const { data: works, error: worksError } = await supabase
     .from('works')
     .select(`
       id,
@@ -28,26 +40,22 @@ export default async function PoemasPage() {
         order_index,
         text_fr,
         text_pt
-      ),
-      collections!inner (
-        slug
       )
     `)
-    .eq('collections.slug', 'poemas')
+    .eq('collection_id', collection.id)
     .order('created_at', { ascending: true })
 
-  if (error) {
-    throw new Error(error.message)
+  if (worksError) {
+    throw new Error(worksError.message)
   }
 
   return (
     <main className="min-h-screen bg-zinc-50 dark:bg-black flex justify-center px-6 py-24">
       <article className="w-full max-w-2xl text-center text-zinc-900 dark:text-zinc-100 space-y-24">
 
-        {works?.map((work) => (
+        {works?.map((work: Work) => (
           <section key={work.id}>
 
-            {/* Cabeçalho */}
             <header className="mb-16">
               <h1 className="text-4xl font-serif font-semibold tracking-tight mb-4">
                 {work.title}
@@ -57,10 +65,9 @@ export default async function PoemasPage() {
               </p>
             </header>
 
-            {/* Poema */}
             <section className="space-y-4 text-lg leading-8">
               {work.segments
-                .sort((a, b) => a.order_index - b.order_index)
+                ?.sort((a, b) => a.order_index - b.order_index)
                 .map((segment, index) => (
                   <details
                     key={index}
