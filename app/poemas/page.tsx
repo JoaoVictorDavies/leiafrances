@@ -78,7 +78,7 @@ export default function PoemasPage() {
             Clique em cada verso para revelar a tradução.
           </p>
           <p className="mt-2">
-            Texto de domínio público · Leitura interativa
+            Texto em domínio público · Leitura interativa
           </p>
         </footer>
 
