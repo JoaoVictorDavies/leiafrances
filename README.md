@@ -1,36 +1,234 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Leia Francês
 
-## Getting Started
+**Leia Francês** é um aplicativo web/PWA aberto para prática de leitura em francês.
 
-First, run the development server:
+Acesse em produção: https://leiafrances.vercel.app/
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+O projeto foi desenvolvido para oferecer uma experiência simples, leve e acessível para quem quer ler textos em francês com frequência. A aplicação reúne conteúdos em domínio público, organizados por categorias, com uma interface adaptada para celular, tablet e desktop.
+
+O aplicativo funciona diretamente pelo navegador e também pode ser instalado como app no dispositivo.
+
+---
+
+## Objetivo
+
+O objetivo do Leia Francês é reduzir a fricção no estudo de leitura em francês.
+
+A proposta é simples:
+
+```txt
+abrir o app → escolher uma categoria → ler em francês → tocar no texto para ver a tradução
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+O projeto foi criado para apoiar o aprendizado por exposição frequente ao idioma, sem exigir cadastro, instalação obrigatória ou fluxo complexo.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+A aplicação funciona como uma ferramenta direta para leitura, contato com vocabulário e prática gradual do francês.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Funcionalidades
 
-To learn more about Next.js, take a look at the following resources:
+O Leia Francês possui:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* acesso aberto, sem necessidade de login;
+* leitura de textos em francês;
+* conteúdos em domínio público;
+* categorias de leitura;
+* interação direta com frases e trechos;
+* exibição de tradução em português ao tocar no texto;
+* modo claro e modo escuro;
+* layout responsivo;
+* adaptação para celular, tablet e desktop;
+* suporte a uso em tela cheia;
+* funcionamento como PWA;
+* página própria de instalação;
+* orientação de instalação para Android e iPhone;
+* ícones próprios do aplicativo;
+* deploy público na Vercel;
+* Supabase como fonte única de verdade para os dados.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Categorias de conteúdo
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+O aplicativo organiza os textos em diferentes categorias para ampliar o contato do usuário com registros variados do francês.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Entre as categorias disponíveis estão:
+
+* filósofos;
+* frases;
+* gírias;
+* história;
+* moderno;
+* piadas;
+* poemas;
+* religião.
+
+A intenção é permitir que o usuário pratique leitura com diferentes estilos de linguagem, desde frases curtas até textos mais reflexivos ou literários.
+
+---
+
+## Interação com os textos
+
+A leitura no Leia Francês não é apenas estática.
+
+O usuário pode tocar em frases ou trechos em francês para visualizar a tradução em português.
+
+Esse recurso foi pensado para manter o usuário dentro do fluxo de leitura, evitando a necessidade de alternar constantemente entre o aplicativo e um tradutor externo.
+
+A proposta é preservar a experiência de leitura e, ao mesmo tempo, oferecer apoio imediato quando necessário.
+
+---
+
+## PWA e instalação
+
+O Leia Francês foi desenvolvido para funcionar também como aplicativo instalável.
+
+A aplicação possui uma área específica de instalação, com orientação conforme o dispositivo utilizado.
+
+O fluxo considera diferenças entre Android e iPhone, conduzindo o usuário de forma mais clara no processo de instalação.
+
+A ideia é permitir acesso rápido ao app, inclusive em tela cheia, aproximando a experiência de um aplicativo nativo sem exigir publicação em loja.
+
+---
+
+## Responsividade
+
+O projeto foi pensado para funcionar bem em diferentes dispositivos e formatos de tela.
+
+A interface se adapta a:
+
+* celulares;
+* tablets;
+* notebooks;
+* desktops;
+* orientação vertical;
+* orientação horizontal.
+
+O foco visual é manter a leitura confortável, com baixa distração e boa adaptação ao tamanho da tela.
+
+---
+
+## Modos de visualização
+
+O Leia Francês possui modo claro e modo escuro.
+
+Essa escolha permite adaptar a leitura a diferentes contextos, como estudo noturno, ambientes iluminados ou uso prolongado no celular.
+
+---
+
+## Conteúdo em domínio público
+
+Os textos utilizados no projeto são baseados em conteúdos de domínio público.
+
+A curadoria busca organizar materiais úteis para leitura e exposição ao francês, respeitando o escopo do projeto como ferramenta aberta de estudo.
+
+---
+
+## Stack tecnológica
+
+O projeto utiliza uma stack moderna para aplicação web/PWA:
+
+* Next.js;
+* React;
+* TypeScript;
+* JavaScript;
+* CSS;
+* Supabase;
+* Vercel.
+
+O Supabase atua como fonte única de verdade para os dados da aplicação, centralizando textos, traduções, categorias e metadados.
+
+A Vercel hospeda a aplicação em produção.
+
+---
+
+## Decisões técnicas
+
+### Next.js e React
+
+A aplicação foi construída com Next.js e React para organizar a experiência web, as rotas, os componentes e a renderização das páginas.
+
+Essa escolha permite manter uma base de código organizada e preparada para evolução.
+
+### TypeScript
+
+O TypeScript foi utilizado para facilitar manutenção e reduzir erros em atualizações futuras.
+
+A tipagem ajuda especialmente na organização de textos, categorias, estados de interface, lógica de instalação e integração com dados externos.
+
+### Supabase
+
+O Supabase foi escolhido como fonte única de verdade.
+
+Em vez de manter os dados espalhados diretamente pelo frontend, a aplicação centraliza conteúdos e metadados em uma base única, facilitando manutenção e evolução.
+
+### PWA
+
+A aplicação foi pensada para funcionar como app instalável, com ícones próprios, página de instalação e experiência adaptada para dispositivos móveis.
+
+---
+
+## Aprendizados do projeto
+
+Este projeto envolveu prática em:
+
+* desenvolvimento web com Next.js;
+* uso de TypeScript em aplicação real;
+* criação de PWA;
+* experiência de instalação em dispositivos móveis;
+* integração com Supabase;
+* deploy com Vercel;
+* responsividade;
+* modo claro e escuro;
+* organização de conteúdo em domínio público;
+* criação de produto próprio voltado ao estudo de idioma.
+
+---
+
+## Possíveis evoluções
+
+Melhorias possíveis para versões futuras:
+
+* histórico de leitura;
+* favoritos;
+* marcação de textos lidos;
+* filtros por nível de dificuldade;
+* filtros por autor;
+* busca por palavras;
+* glossário;
+* áudio;
+* estatísticas de leitura;
+* autenticação opcional;
+* painel administrativo para cadastro de textos;
+* cache/offline mais robusto;
+* melhorias no fluxo de instalação em iOS;
+* modo de revisão de vocabulário.
+
+---
+
+## Escopo
+
+O Leia Francês não pretende substituir um curso completo de francês.
+
+O objetivo é oferecer uma ferramenta simples para leitura, exposição ao idioma e consulta rápida de tradução.
+
+O foco está em constância, acessibilidade e simplicidade.
+
+---
+
+## Status
+
+Projeto publicado e funcional.
+
+Acesse: https://leiafrances.vercel.app/
+
+O app está em desenvolvimento contínuo e pode receber novos textos, categorias e melhorias de experiência ao longo do tempo.
+
+---
+
+## Autor
+
+Desenvolvido por **João Victor Davies**.
+
+Projeto criado para estudo de francês, prática de leitura e desenvolvimento de uma aplicação web/PWA com Next.js, TypeScript, Supabase e Vercel.
