@@ -161,7 +161,68 @@ A tipagem ajuda especialmente na organização de textos, categorias, estados de
 
 O Supabase foi escolhido como fonte única de verdade.
 
-Em vez de manter os dados espalhados diretamente pelo frontend, a aplicação centraliza conteúdos e metadados em uma base única, facilitando manutenção e evolução.
+Em vez de manter os dados espalhados diretamente pelo frontend, a aplicação centraliza conteúdos e metadados em uma base única, facilitando manutenção e evolução. ## Gestão de conteúdo via Supabase
+
+O Leia Francês foi estruturado para ser alimentado diretamente pelo Supabase.
+
+Os textos, traduções, categorias e metadados não precisam ser adicionados manualmente no frontend. Ao inserir um novo conteúdo no Supabase, seguindo a estrutura esperada pelo banco, o frontend passa a consumir e exibir esse conteúdo automaticamente.
+
+Isso permite que novos textos sejam adicionados sem necessidade de alterar o código da aplicação ou fazer novo deploy apenas para atualizar conteúdo.
+
+Fluxo conceitual:
+
+```txt
+insert no Supabase
+      ↓
+texto/categoria/metadados registrados
+      ↓
+frontend consome os dados
+      ↓
+conteúdo aparece no aplicativo
+```
+
+Essa decisão torna o projeto mais simples de manter e aproxima a aplicação de um modelo de curadoria dinâmica de conteúdo.
+
+---
+
+## Supabase como fonte única de verdade
+
+O Supabase funciona como fonte única de verdade da aplicação.
+
+A interface do Leia Francês depende dos dados cadastrados no Supabase para montar categorias, textos, traduções e conteúdos disponíveis ao usuário.
+
+Essa abordagem evita que o conteúdo fique espalhado diretamente pelo frontend e permite organizar o projeto de forma mais escalável.
+
+Em vez de alterar componentes sempre que um novo texto é adicionado, basta cadastrar o conteúdo no banco seguindo a estrutura esperada.
+
+---
+
+## Comportamento em caso de indisponibilidade do Supabase
+
+O projeto foi pensado para não quebrar a interface caso o Supabase esteja temporariamente indisponível ou pausado.
+
+Se a fonte de dados não responder, a aplicação continua acessível em produção, mas pode aparecer sem categorias e sem textos carregados.
+
+Ou seja, o site permanece no ar, mas sem o conteúdo dinâmico vindo do banco.
+
+Esse comportamento evita uma quebra completa da experiência e permite que a aplicação degrade de forma controlada:
+
+```txt
+Supabase disponível
+      ↓
+categorias e textos carregados normalmente
+
+Supabase indisponível ou pausado
+      ↓
+site continua no ar
+      ↓
+conteúdo dinâmico não é exibido
+      ↓
+interface não quebra completamente
+```
+
+Esse desenho separa a disponibilidade da interface web da disponibilidade da camada de dados.
+
 
 ### PWA
 
