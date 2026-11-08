@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-import { generate } from '@/app/lib/teacher/ai'
+import { AIProviderError, generate } from '@/app/lib/teacher/ai'
 import { advanceJourney, JourneyError } from '@/app/lib/teacher/engine'
 import {
   actionSchema, journeySchema, publicJourney,
@@ -86,6 +86,19 @@ export async function POST(request: Request) {
     return json({ journey: publicJourney(next, revision) })
   } catch (error) {
     if (error instanceof JourneyError) return json({ error: error.message }, error.status)
+    if (error instanceof AIProviderError) {
+      console.error('Falha do provedor de IA:', { status: error.status, code: error.code, requestId: error.requestId })
+      if (error.status === 429) {
+        if (error.code === 'rate_limit_exceeded') {
+          return json({ error: 'O serviço de IA está recebendo muitas solicitações. Aguarde um pouco e tente novamente.' }, 429)
+        }
+        if (error.code !== 'unknown') {
+          return json({ error: 'O serviço de IA está temporariamente indisponível. O administrador precisa verificar a conta do provedor.' }, 503)
+        }
+        return json({ error: 'O serviço de IA atingiu um limite. Tente mais tarde ou entre em contato com o administrador.' }, 429)
+      }
+      return json({ error: 'O serviço de IA está temporariamente indisponível. Tente novamente mais tarde.' }, 502)
+    }
     console.error('Erro na jornada de aprendizagem:', error)
     return json({ error: 'Não foi possível gerar ou salvar a próxima etapa. Tente novamente.' }, 500)
   } finally {

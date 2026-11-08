@@ -10,7 +10,7 @@ test('API autentica, isola contas e persiste o ciclo de nivelamento e adaptaçã
   process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service'
   process.env.OPENAI_API_KEY = 'test-ai'
   const rows = new Map<string, { state: unknown; revision: number }>()
-  let aiFails = false
+  let aiFailure: { status: number; body: unknown } | null = null
   const question = {
     prompt: 'Escolha', options: ['A', 'B', 'C', 'D'].map((id) => ({ id, text: `opção ${id}` })),
     correctId: 'A', explanation: 'Explicação',
@@ -27,7 +27,7 @@ test('API autentica, isola contas e persiste o ciclo de nivelamento e adaptaçã
     const auth = request.headers.get('authorization')
     if (url.hostname === 'api.openai.com') {
       assert.equal(auth, 'Bearer test-ai')
-      if (aiFails) return respond({ error: 'unavailable' }, 503)
+      if (aiFailure) return respond(aiFailure.body, aiFailure.status)
       return respond({ choices: [{ message: { content: JSON.stringify(generated.shift()) } }] })
     }
     assert.equal(url.hostname, 'test.supabase.co')
@@ -90,8 +90,22 @@ test('API autentica, isola contas e persiste o ciclo de nivelamento e adaptaçã
     assert.equal(restored.journey.revision, 3)
     assert.doesNotMatch(JSON.stringify(restored.journey.exercise), /correctId|explanation/)
     assert.equal((await (await GET(request('token-b'))).json()).journey, null)
-    aiFails = true
-    assert.equal((await POST(request('token-a', { action: 'answer', revision: 3, answer: 'A' }))).status, 500)
+    for (const [body, status, expected] of [
+      [{ error: { code: 'credit_balance_exhausted', message: 'sensitive text' } }, 503, 'administrador'],
+      [{ error: { code: 'rate_limit_exceeded' } }, 429, 'Aguarde'],
+      [{ error: { code: 'other', type: 'insufficient_quota' } }, 503, 'administrador'],
+      [{ error: { code: 'unrecognized' } }, 429, 'atingiu um limite'],
+    ] as const) {
+      aiFailure = { status: 429, body }
+      const failure = await POST(request('token-a', { action: 'answer', revision: 3, answer: 'A' }))
+      assert.equal(failure.status, status)
+      const message = (await failure.json()).error
+      assert.match(message, new RegExp(expected))
+      assert.doesNotMatch(message, /sensitive text/)
+      assert.equal(rows.get('user-a')?.revision, 3)
+    }
+    aiFailure = { status: 503, body: { error: 'unavailable' } }
+    assert.equal((await POST(request('token-a', { action: 'answer', revision: 3, answer: 'A' }))).status, 502)
     assert.equal(rows.get('user-a')?.revision, 3)
   } finally {
     globalThis.fetch = originalFetch

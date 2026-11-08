@@ -22,6 +22,12 @@ O service worker anterior armazenava respostas do Supabase sem separação de co
 
 Em caso de falha, consulte os logs do servidor sem registrar tokens ou conteúdo pessoal. Para desativar a funcionalidade, remova o acesso à rota e publique essa alteração; não apague as tabelas sem avaliar retenção e backup.
 
+### Erro 429 da OpenAI
+
+Nos logs da Vercel, procure `Falha do provedor de IA` e o campo `code`. A aplicação registra somente status, código reconhecido e ID da requisição; não registra o corpo da resposta nem a chave. `rate_limit_exceeded` indica limitação temporária de requisições/tokens. `credit_balance_exhausted` indica saldo de créditos esgotado. `project_spend_limit_exceeded`, `organization_spend_limit_exceeded`, `organization_usage_limit_exceeded` ou `insufficient_quota` exigem verificar cobrança ou limites da organização/projeto OpenAI associado à chave usada em produção. `unknown` significa que não foi possível identificar a causa a partir da resposta e não permite afirmar que seja falta de créditos.
+
+Verifique [cobrança da API](https://platform.openai.com/settings/organization/billing/overview) e [limites de uso](https://platform.openai.com/settings/organization/limits) no projeto/organização corretos; a cobrança da API é separada do ChatGPT. Para erros de quota/saldo, repetir não resolve: ajuste o limite ou a cobrança antes de testar novamente. Configure limites financeiros apropriados, sem compartilhar chaves no chat. Após alterar variáveis na Vercel, faça um novo deploy. Cada tentativa de geração, inclusive com falha, conta para os limites diários do aplicativo. Consulte também o [guia oficial de erros 429](https://help.openai.com/en/articles/5955604-troubleshooting-api-rate-limits-and-429-errors).
+
 **Leia Francês** é um aplicativo web/PWA aberto para prática de leitura em francês.
 
 Acesse em produção: https://leiafrances.vercel.app/
