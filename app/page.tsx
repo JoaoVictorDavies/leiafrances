@@ -82,6 +82,9 @@ export default function HomePage() {
               )}
             </nav>
           )}
+          <Link href="/professor" className={`mt-6 px-8 py-4 border text-sm uppercase tracking-widest transition-all ${borderClass}`}>
+            Professor com IA
+          </Link>
         </div>
       </div>
 

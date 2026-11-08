@@ -11,6 +11,12 @@ export default function InstallPWA() {
   const [showIOSPrompt, setShowIOSPrompt] = useState(false);
 
   useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch((error) => {
+        console.error('Não foi possível registrar o service worker:', error);
+      });
+    }
+
     // 1. Verifica se já está instalado (Modo Standalone)
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone;
     if (isStandalone) {
@@ -32,11 +38,6 @@ export default function InstallPWA() {
     }
 
     // --- FLUXO ANDROID/DESKTOP ABAIXO ---
-
-    // 3. Registra Service Worker (apenas se não for iOS, pois iOS gerencia diferente)
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
-    }
 
     // 4. Escuta o evento nativo de instalação (Android/Chrome)
     const handler = (e: any) => {

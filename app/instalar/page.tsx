@@ -44,7 +44,7 @@ export default function InstalarPage() {
     }}>
       <h1 style={{ fontSize: '2rem', marginBottom: '10px' }}>Instalar Leia Francês</h1>
       <p style={{ marginBottom: '30px', opacity: 0.8 }}>
-        Tenha acesso rápido e estude mesmo offline.
+        Tenha acesso rápido ao Leia Francês. A leitura e o professor com IA exigem conexão.
       </p>
       
       <button 

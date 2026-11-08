@@ -1,5 +1,27 @@
 # Leia Francês
 
+## Professor com IA (fundação experimental)
+
+A rota `/professor` oferece login ou cadastro por e-mail, Google ou Facebook no Supabase, escolha de objetivo, nivelamento gerado por IA, plano de cinco fases e exercícios adaptativos. A jornada é independente do catálogo público, que continua acessível sem conta. Cada resposta é corrigida pelo gabarito salvo no servidor; a IA recebe o último resultado e um resumo limitado do estado, não um histórico de chat. A fase só pode avançar após um acerto e no máximo uma por vez. O nível CEFR é uma estimativa, e o conteúdo gerado pode conter erros.
+
+Esta versão mantém uma jornada por conta: ao escolher e iniciar outro objetivo, a anterior é substituída. Não há conclusão automática da quinta fase, recuperação de senha na interface ou geração offline. A confirmação de e-mail depende das configurações do Supabase Auth. Um aviso solicita concordância antes de enviar o objetivo, as respostas e o resumo de aprendizado à OpenAI; a concordância é solicitada novamente após recarregar a página.
+
+### Configuração e implantação
+
+1. Faça backup e aplique, no projeto Supabase correto, a migração aditiva [`202611080001_teacher_journey.sql`](supabase/migrations/202611080001_teacher_journey.sql). Ela não modifica o catálogo existente. As tabelas da jornada têm RLS ativa, sem acesso direto dos clientes; apenas o servidor usa a chave privilegiada. As funções de limite de uso são restritas ao papel `service_role`.
+2. Configure as variáveis no ambiente de execução e build:
+   - `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`: endereço e chave pública do projeto.
+   - `SUPABASE_SERVICE_ROLE_KEY`: chave privilegiada, **somente no servidor**, nunca com prefixo `NEXT_PUBLIC_`.
+   - `OPENAI_API_KEY`: chave privada, **somente no servidor**.
+   - `OPENAI_MODEL`: opcional; padrão `gpt-4o-mini`, compatível com Chat Completions e JSON mode. Confirme acesso ao modelo e custos antes de ativar.
+3. Configure Auth, URLs de redirecionamento e entrega de e-mail no Supabase. Para Google e Facebook, habilite os provedores e permita a URL `https://SEU-DOMINIO/professor` em Auth → URL Configuration → Redirect URLs; configure também a URL de callback do Supabase nos respectivos provedores. Cada domínio de preview ou local precisa estar autorizado separadamente. Depois execute `npm test` e `npm run build`, publique e teste login social com cada provedor, duas contas e uma jornada completa. Em produção, configure limites de gasto e monitore erros e uso da OpenAI.
+
+O limite inicial é de 20 tentativas de geração por usuário e 200 no total por dia UTC, com intervalo de cinco segundos e uma geração por vez por conta. Tentativas que falham também contam; a jornada só é atualizada depois de resposta válida e persistência bem-sucedida. Os limites de requisições não substituem limites financeiros no provedor. A API autentica cada requisição e procura o estado pelo ID verificado; o número da revisão evita sobrescritas silenciosas. Chaves e gabaritos nunca são retornados antes da resposta.
+
+O service worker anterior armazenava respostas do Supabase sem separação de contas. A nova versão apaga os caches antigos do app e não armazena respostas do Supabase nem da API. Por segurança, a jornada espera a atualização do service worker antes de inicializar a autenticação. **A leitura offline anterior foi desativada**; não há garantia de acesso offline até uma futura implementação com armazenamento privado e sincronização adequados.
+
+Em caso de falha, consulte os logs do servidor sem registrar tokens ou conteúdo pessoal. Para desativar a funcionalidade, remova o acesso à rota e publique essa alteração; não apague as tabelas sem avaliar retenção e backup.
+
 **Leia Francês** é um aplicativo web/PWA aberto para prática de leitura em francês.
 
 Acesse em produção: https://leiafrances.vercel.app/
